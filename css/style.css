@@ -1,0 +1,217 @@
+/* ==== Liquid Glass Effect Version ==== */
+
+/* Base Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: radial-gradient(circle at top left, #001, #111, #000);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    padding: 20px;
+    color: #fff;
+}
+
+/* Container */
+.container {
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Liquid Glass Card */
+.glass-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 30px;
+    padding: 40px;
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.15), inset 0 0 30px rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+}
+
+/* Animated reflection layer */
+.glass-card::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(0, 255, 255, 0.15),
+        rgba(255, 255, 255, 0.1),
+        transparent 70%
+    );
+    animation: liquidShift 8s linear infinite;
+    z-index: 0;
+    opacity: 0.4;
+}
+
+@keyframes liquidShift {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.glass-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Header */
+h1 {
+    text-align: center;
+    font-size: 2.8em;
+    font-weight: 700;
+    background: linear-gradient(90deg, #00ffff, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 40px;
+}
+
+/* Screens */
+.screen-home, .screen-camera, .screen-edit {
+    display: none;
+}
+
+.screen-home.active, .screen-camera.active, .screen-edit.active {
+    display: block;
+}
+
+/* Layout Grid */
+.layout-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.layout-option {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 30px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+}
+
+.layout-option:hover {
+    transform: translateY(-5px) scale(1.03);
+    border-color: rgba(0, 255, 255, 0.6);
+    background: rgba(0, 255, 255, 0.15);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.layout-option.selected {
+    border-color: #00ffff;
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+}
+
+/* Buttons */
+.btn {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    font-size: 1.1em;
+    padding: 16px 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Camera, Countdown, Photos */
+.camera-container {
+    position: relative;
+    max-width: 640px;
+    margin: 0 auto 30px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+}
+
+video, canvas {
+    width: 100%;
+    display: block;
+    border-radius: 20px;
+}
+
+.countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 100px;
+    color: #00ffff;
+    font-weight: 700;
+    text-shadow: 0 0 40px rgba(0, 255, 255, 0.7);
+    display: none;
+}
+
+.countdown.active {
+    display: block;
+    animation: pulse 1s ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+}
+
+/* Edit screen and grids */
+.sticker-btn, .frame-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sticker-btn:hover, .frame-btn:hover {
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .glass-card { padding: 20px; }
+    h1 { font-size: 2em; }
+    .layout-grid { grid-template-columns: 1fr; }
+    .countdown { font-size: 70px; }
+}
