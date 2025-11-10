@@ -9,7 +9,7 @@
 
 body {
     font-family: "Poppins", sans-serif;
-    background: radial-gradient(circle at top left, #001, #111, #000);
+    background: radial-gradient(circle at top left, #ff9a9e, #fad0c4, #fbc2eb);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -100,11 +100,12 @@ h1 {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
     margin-bottom: 30px;
+   
 }
 
 .layout-option {
     background: rgba(255, 255, 255, 0.08);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 20px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;
     padding: 30px;
     cursor: pointer;
@@ -163,12 +164,51 @@ h1 {
     overflow: hidden;
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+    display: grid;
+    justify-content: center;
+
 }
 
+.photos-grid {
+  display: flex;
+  grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+  justify-content: center;
+  align-items: start;
+  gap: 20px;
+  margin: 40px auto;
+  max-width: 900px;
+
+
+}
+
+.photos-grid img,
+.photos-grid canvas {
+  width: auto;   
+  height: 80vh;     
+  max-height: 600px;    /* maintains the correct aspect ratio */
+  object-fit: contain;  /* makes sure the whole image fits */
+  border-radius: 10px;  /* optional: soft rounded corners */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+#photosGrid img,
+#photosGrid canvas {
+  width: 200px;            /* fixed, reasonable width */
+  height: auto;            /* keeps proportions */
+  border-radius: 10px;
+  object-fit: cover;        /* optional: fills the frame neatly */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  background: white;
+  padding: 4px;
+}
+
+/* camera size */
 video, canvas {
-    width: 100%;
+    max-width: 640px;
     display: block;
-    border-radius: 20px;
+    border: 20px;
+    justify-content: center;
+    align-items: center;
 }
 
 .countdown {
@@ -196,17 +236,73 @@ video, canvas {
 /* Edit screen and grids */
 .sticker-btn, .frame-btn {
     background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
+    border: 10px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
+
 
 .sticker-btn:hover, .frame-btn:hover {
     background: rgba(0, 255, 255, 0.2);
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
     transform: scale(1.1);
 }
+
+
+/* --- Edit Screen Layout --- */
+.screen-edit .edit-layout {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+/* Left side (photo strip preview) */
+.final-preview {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.final-preview canvas {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Right side (stickers + frames) */
+.customization-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.sticker-section,
+.frame-section {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.section-title {
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.stickers-grid,
+.frames-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
 
 /* Responsive */
 @media (max-width: 768px) {

@@ -10,17 +10,18 @@ class PhotoEditor {
         this.photos = [];
         
         // Stickers collection
-        this.stickers = ['❤️', '⭐', '🌟', '✨', '💫', '🎈', '🎉', '🎊', '🌈', '☀️', '🌙', '⚡', '💖', '🦋', '🌸'];
+        this.stickers = ['🐥', '⭐', '🌟', '✨', '🍒', '💋', '🧁', '💕', '🌈', '☀️', '🌙', '⚡', '💗', '🦋', '🌸','🪅','🐱', '🐶'];
         
         // Frame colors
         this.frames = [
             { color: '#ffffff', name: 'White' },
-            { color: '#ff6b6b', name: 'Red' },
-            { color: '#4ecdc4', name: 'Teal' },
-            { color: '#ffe66d', name: 'Yellow' },
-            { color: '#a8e6cf', name: 'Green' },
-            { color: '#ff8b94', name: 'Pink' },
-            { color: '#c7ceea', name: 'Purple' }
+            { color: '#550909ff', name: 'Maroon' },
+            { color: '#b3f6ffff', name: 'blue' },
+            { color: '#fee770ff', name: 'Yellow' },
+            { color: '#437563ff', name: 'Sage Green' },
+            { color: '#ffbabaff', name: 'Pink' },
+            { color: '#d6adffff', name: 'Purple' },
+            { color: '#000000ff', name: 'Black'}
         ];
     }
 
@@ -32,6 +33,9 @@ class PhotoEditor {
         this.renderStickers();
         this.renderFrames();
         this.renderFinalImage();
+        this.enableStickerDrag();
+        this.enableStickerInteractions();
+
     }
 
     // Render sticker options
@@ -50,19 +54,18 @@ class PhotoEditor {
 
     // Add sticker to photo
     addSticker(emoji, buttonElement) {
-        // Add sticker with random position
-        this.selectedStickers.push({
-            emoji: emoji,
-            x: Math.random() * 0.6 + 0.2, // Random position between 20-80%
-            y: Math.random() * 0.6 + 0.2
-        });
-        
-        // Visual feedback
-        buttonElement.classList.add('selected');
-        setTimeout(() => buttonElement.classList.remove('selected'), 300);
-        
-        // Re-render image
-        this.renderFinalImage();
+     this.selectedStickers.push({
+        emoji: emoji,
+        x: Math.random() * 0.8 + 0.1, // random position within frame
+        y: Math.random() * 0.8 + 0.1,
+        size: 64 // default size
+    });
+
+    // Visual feedback
+    buttonElement.classList.add('selected');
+    setTimeout(() => buttonElement.classList.remove('selected'), 300);
+
+    this.renderFinalImage();
     }
 
     // Render frame color options
@@ -172,22 +175,16 @@ class PhotoEditor {
 
     // Draw stickers on photos
     drawStickers(baseX, baseY, photoWidth, photoHeight, cols, rows) {
-        this.selectedStickers.forEach(sticker => {
-            // Draw sticker on each photo
-            this.photos.forEach((_, index) => {
-                const col = index % cols;
-                const row = Math.floor(index / cols);
-                const x = col * photoWidth + (col + 1) * 20; // 20 is padding
-                const y = row * photoHeight + (row + 1) * 20;
-                
-                this.ctx.font = '48px Arial';
-                this.ctx.fillText(
-                    sticker.emoji,
-                    x + sticker.x * photoWidth,
-                    y + sticker.y * photoHeight
-                );
-            });
-        });
+   this.selectedStickers.forEach(sticker => {
+        this.ctx.font = `${sticker.size}px Arial`;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(
+            sticker.emoji,
+            sticker.x * this.finalCanvas.width,
+            sticker.y * this.finalCanvas.height
+        );
+    });
     }
 
     // Download final image
@@ -208,6 +205,126 @@ class PhotoEditor {
         this.photos = [];
         this.ctx.clearRect(0, 0, this.finalCanvas.width, this.finalCanvas.height);
     }
+
+
+    enableStickerDrag() {
+    let isDragging = false;
+    let currentSticker = null;
+    let offsetX, offsetY;
+
+    this.finalCanvas.addEventListener('mousedown', (e) => {
+        const rect = this.finalCanvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left);
+        const y = (e.clientY - rect.top);
+
+        if (this.selectedStickers.length > 0) {
+            const sticker = this.selectedStickers[0];
+            const totalWidth = this.finalCanvas.width;
+            const totalHeight = this.finalCanvas.height;
+
+            const stickerX = sticker.x * totalWidth;
+            const stickerY = sticker.y * totalHeight;
+            const size = sticker.size;
+
+            // Simple hit detection (within a square around emoji)
+            if (Math.abs(x - stickerX) < size && Math.abs(y - stickerY) < size) {
+                isDragging = true;
+                currentSticker = sticker;
+                offsetX = x - stickerX;
+                offsetY = y - stickerY;
+            }
+        }
+    });
+
+    this.finalCanvas.addEventListener('mousemove', (e) => {
+        if (!isDragging || !currentSticker) return;
+
+        const rect = this.finalCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Update sticker’s relative coordinates (0–1 scale)
+        currentSticker.x = x / this.finalCanvas.width;
+        currentSticker.y = y / this.finalCanvas.height;
+
+        this.renderFinalImage();
+    });
+
+    this.finalCanvas.addEventListener('mouseup', () => {
+        isDragging = false;
+        currentSticker = null;
+    });
+
+    this.finalCanvas.addEventListener('mouseleave', () => {
+        isDragging = false;
+        currentSticker = null;
+    });
+}
+
+enableStickerInteractions() {
+    let isDragging = false;
+    let activeSticker = null;
+    let offsetX = 0, offsetY = 0;
+
+    // Mouse down → select sticker
+    this.finalCanvas.addEventListener('mousedown', (e) => {
+        const rect = this.finalCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Iterate from topmost to bottommost (reverse for z-order)
+        for (let i = this.selectedStickers.length - 1; i >= 0; i--) {
+            const sticker = this.selectedStickers[i];
+            const sX = sticker.x * this.finalCanvas.width;
+            const sY = sticker.y * this.finalCanvas.height;
+            const radius = sticker.size / 2;
+
+            if (Math.abs(x - sX) < radius && Math.abs(y - sY) < radius) {
+                activeSticker = sticker;
+                isDragging = true;
+                offsetX = x - sX;
+                offsetY = y - sY;
+                break;
+            }
+        }
+    });
+
+    // Mouse move → drag active sticker
+    this.finalCanvas.addEventListener('mousemove', (e) => {
+        if (!isDragging || !activeSticker) return;
+
+        const rect = this.finalCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        activeSticker.x = x / this.finalCanvas.width;
+        activeSticker.y = y / this.finalCanvas.height;
+
+        this.renderFinalImage();
+    });
+
+    // Mouse up → release
+    this.finalCanvas.addEventListener('mouseup', () => {
+        isDragging = false;
+        activeSticker = null;
+    });
+
+    this.finalCanvas.addEventListener('mouseleave', () => {
+        isDragging = false;
+        activeSticker = null;
+    });
+
+    // Mouse wheel → resize
+    this.finalCanvas.addEventListener('wheel', (e) => {
+        if (!activeSticker) return;
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 5 : -5;
+        activeSticker.size = Math.max(20, activeSticker.size + delta);
+        this.renderFinalImage();
+    });
+}
+
+
 }
 
 // Export editor instance
